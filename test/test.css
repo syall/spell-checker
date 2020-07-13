@@ -1,10 +1,13 @@
 :root {
     --width: 24em;
+    --margin: 1em;
+    --border: 1px;
+    --font: 1em;
 }
 
 * {
     font-family: 'Roboto', sans-serif;
-    font-size: 1em;
+    font-size: var(--font);
     margin: 0;
     padding: 0;
 }
@@ -14,36 +17,37 @@ body {
 }
 
 button {
-    display: inline-block;
-    border: none;
-    width: 22em;
-    margin: 1em;
-    padding: 1em 0;
+    border: 1px solid black;
+    width: calc(100% - 2 * var(--margin));
+    margin: var(--margin);
+    padding: var(--margin) 0;
     color: white;
     background-color: black;
     text-align: center;
     text-decoration: none;
 }
 
-ul {
-    margin: 0;
-    padding-left: 1em;
-}
 
 main {
     margin: 1em;
-}
-
-section {
-    border: 1px solid black;
-    padding: 1em;
-    width: 100%s;
-}
-
-section:not(:last-child) {
-    margin-bottom: 1em;
+    width: 100%;
 }
 
 .loading {
     text-align: center;
+    width: calc(100% - 2 * var(--margin) + 2 * var(--border));
+}
+
+section {
+    border: var(--border) solid black;
+    padding: var(--margin);
+    width: calc(100% - 4 * var(--margin));
+}
+
+section:not(:last-child) {
+    margin-bottom: var(--margin);
+}
+
+ul {
+    padding-left: var(--margin);
 }
