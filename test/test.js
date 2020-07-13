@@ -1,4 +1,4 @@
-import SpellChecker from './src/SpellChecker.js';
+import SpellChecker from '../src/SpellChecker.js';
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 
