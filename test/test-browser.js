@@ -1,7 +1,11 @@
 import SpellChecker from '../src/SpellChecker.js';
 
-document.getElementById("button").onclick = SpellCheckerWithCurlData;
+document.getElementById("button").onclick = initTests;
 const output = document.getElementById("output");
+
+async function initTests() {
+    runTestSuites(await SpellCheckerWithCurlData());
+}
 
 async function SpellCheckerWithCurlData(
     _,
@@ -9,18 +13,10 @@ async function SpellCheckerWithCurlData(
     url = 'http://127.0.0.1:5500/data/big.txt'
 ) {
     try {
-        output.innerHTML =
-            '<div class="loading">Loading data into SpellChecker...</div>';
-        const xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = async function () {
-            if (this.readyState === 4 && this.status === 200) {
-                output.textContent = '';
-                sc.addCorpus(this.responseText);
-                await runTestSuites(sc);
-            }
-        };
-        xhr.open('GET', url);
-        xhr.send();
+        output.innerHTML = '<div class="loading">Loading data into SpellChecker...</div>';
+        sc.addCorpus(await (await fetch(url)).text());
+        output.innerHTML = '';
+        return sc;
     } catch (error) {
         console.error(error);
     }
