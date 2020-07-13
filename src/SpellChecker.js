@@ -3,6 +3,7 @@ export default class SpellChecker {
     dictionary = new Map();
     textToWords = /\w+/gi;
     letters = [...'abcdefghijklmnopqrstuvwxyz'];
+    count = 0;
 
     correction(word) {
         const result = Array.from(this.candidates(word));
@@ -101,7 +102,7 @@ export default class SpellChecker {
     }
 
     getProbability(word) {
-        return this.getCount(word) / this.dictionary.size;
+        return this.getCount(word) / this.count;
     }
 
     getCount(word) {
