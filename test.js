@@ -2,28 +2,31 @@ import SpellChecker from './src/SpellChecker.js';
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 
-const sc = new SpellChecker();
-addDirToSpellChecker(sc, join(resolve(), 'data'));
-runTestSuites(sc);
+runTestSuites(SpellCheckerWithDirData());
 
-function addDirToSpellChecker(sc, dir, verbose = false) {
+function SpellCheckerWithDirData(
+    sc = new SpellChecker(),
+    dir = join(resolve(), 'data'),
+    verbose = false
+) {
     try {
         for (const item of readdirSync(dir)) {
             const itemPath = `${dir}/${item}`;
             if (statSync(itemPath).isDirectory()) {
                 verbose && console.log(`Recursing into ${itemPath}`);
-                addDirToSpellChecker(sc, itemPath, verbose);
+                SpellCheckerWithDirData(sc, itemPath, verbose);
             } else {
                 verbose && console.log(`Reading from ${itemPath}`);
                 sc.addCorpus(readFileSync(itemPath).toString());
             }
         }
+        return sc;
     } catch (error) {
         console.error(error);
     }
 }
 
-function runTestSuites(sc) {
+function runTestSuites(sc, filter = []) {
 
     const name = sc.constructor.name;
     const threshold = 90;
@@ -62,40 +65,45 @@ function runTestSuites(sc) {
                 ['bycycle', 1],
                 ['arrainged', 1],
                 // 2 Edits
-                ['peotryy', 80],
+                ['peotryy', 120],
                 ['korrectud', 160],
                 ['inconvient', 240],
                 // Unknown
-                ['neverseenyet', 320]
+                ['neverseenyet', 360]
             ],
             count: 0,
             cond: (input, test) => {
-                const start = new Date();
-                sc.correction(input);
-                const time = new Date() - start;
-                return time <= test;
+                const count = 10;
+                let time = 0;
+                for (let i = 0; i < count; i++) {
+                    const start = new Date();
+                    sc.correction(input);
+                    time += new Date() - start;
+                }
+                return time / count <= test;
             },
             message: (c, i, t) => `${mark(c)} : '${i}' corrected in <= ${t}ms`
         }
-    ];
+    ].filter(s => !filter.includes(s.title));
 
     startSuites() && suites.forEach(suite => runSuite(suite)) || finishSuites();
 
     function startSuites() {
         console.clear();
-        console.log(`${name} Test Suites Initializing`);
+        console.log(`${name} Test Suites Initialization`);
         console.group();
-        for (const s of suites)
+        for (const s of suites) {
             if (verifySuite(s)) console.log(`${s.title} Test Suite Verified`);
             else return console.log(`${s.title} Test Suite Invalid`) && false;
+        }
         console.groupEnd();
-        console.log(`${name} Test Suites Started`);
+        console.log(`${name} Test Suites Start`);
         console.log();
         return true;
     }
 
     function runSuite(s) {
-        console.log(`${s.title} Test Suite Started: `);
+        console.log(`${s.title} Test Suite Start: `);
         console.group();
         for (const [input, test] of s.tests) {
             const cond = s.cond(input, test) && (s.count += 1);

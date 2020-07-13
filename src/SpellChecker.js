@@ -5,58 +5,80 @@ export default class SpellChecker {
     letters = [...'abcdefghijklmnopqrstuvwxyz'];
 
     correction(word) {
-        const result = this.candidates(word);
+        const result = Array.from(this.candidates(word));
         result.sort(this.probabilityComparison);
         return result[0];
     }
 
     candidates(word) {
         return (
-            this.known([word]) ||
+            this.known([new Set([word])]) ||
             this.known(this.editN(word, 1)) ||
             this.known(this.editN(word, 2)) ||
             [word]
         );
     }
 
-    known(words) {
-        const result = [];
-        for (const word of words)
-            if (this.dictionary.get(word))
-                result.push(word);
-        return result.length !== 0
-            ? result
-            : false;
+    known(wordSets) {
+        const result = new Set();
+        for (const wordSet of wordSets) {
+            wordSet.forEach(w => this.dictionary.get(w) && result.add(w));
+        }
+        return result.size !== 0 ? result : false;
     }
 
     editN(word, n) {
-
-        if (n < 1)
-            throw new Error(`n must be >= 1, got ${n}`);
-
-        const result = [];
-        // Recursive Case
-        if (n > 1)
-            for (const p of this.editN(word, n - 1))
-                result.push(p, ...this.editN(p, n - 1));
-        // Base Case: 54n+25
-        for (let i = 0; i <= word.length; i++) {
-            if (i < word.length - 1)
-                // Swap 2 letters: n-1
-                result.push(`${word.slice(0, i)}${word.slice(i + 1, i + 2)}${word.slice(i, i + 1)}${word.slice(i + 2)}`);
-            if (i < word.length) {
-                // Delete 1 letter: n
-                result.push(`${word.slice(0, i)}${word.slice(i + 1)}`);
-                // Replace 1 letter: 26n
-                for (const l of this.letters)
-                    result.push(`${word.slice(0, i)}${l}${word.slice(i + 1)}`);
-            }
-            if (i <= word.length)
-                // Insert 1 letter: 26(n+1)
-                for (const l of this.letters)
-                    result.push(`${word.slice(0, i)}${l}${word.slice(i)}`);
+        /** 1 Edit Case: 54n+25 */
+        if (n === 1) {
+            // Swap 2 letters: n-1
+            const swaps = this.swapEdit(word);
+            // Delete 1 letter: n
+            const deletes = this.deleteEdit(word);
+            // Replace 1 letter: 26n
+            const replaces = this.replaceEdit(word);
+            // Insert 1 letter: 26(n+1)
+            const inserts = this.insertEdit(word);
+            return [new Set([...swaps, ...deletes, ...replaces, ...inserts])];
         }
+        /** 2 Edits Case:  */
+        else if (n === 2) {
+            const result = [];
+            for (const wordSet of this.editN(word, 1))
+                wordSet.forEach(w => result.push(...this.editN(w, 1)));
+            return result;
+        }
+        /** Error Case */
+        else throw new Error(`n must be 1 or 2, got ${n}`);
+    }
 
+    deleteEdit(word) {
+        const result = new Set();
+        for (let i = 0; i < word.length; i++)
+            result.add(`${word.slice(0, i)}${word.slice(i + 1)}`);
+        return result;
+    }
+
+    swapEdit(w) {
+        const result = new Set();
+        for (let i = 0; i < w.length - 1; i++) {
+            const before = w.slice(0, i), after = w.slice(i + 2);
+            const swap1 = w.slice(i, i + 1), swap2 = w.slice(i + 1, i + 2);
+            result.add(`${before}${swap2}${swap1}${after}`);
+        }
+        return result;
+    }
+
+    replaceEdit(word) {
+        const result = new Set();
+        for (let i = 0; i < word.length; i++) for (const l of this.letters)
+            result.add(`${word.slice(0, i)}${l}${word.slice(i + 1)}`);
+        return result;
+    }
+
+    insertEdit(word) {
+        const result = new Set();
+        for (let i = 0; i <= word.length; i++) for (const l of this.letters)
+            result.add(`${word.slice(0, i)}${l}${word.slice(i)}`);
         return result;
     }
 
@@ -74,10 +96,8 @@ export default class SpellChecker {
     }
 
     processWord(word) {
-        const result = word.match(this.textToWords);
-        return result && result.length === 1
-            ? word.trim().toLowerCase()
-            : false;
+        const r = word.match(this.textToWords);
+        return r && r.length === 1 ? word.trim().toLowerCase() : false;
     }
 
     getProbability(word) {
