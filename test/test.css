@@ -1,0 +1,42 @@
+:root {
+    --width: 20em;
+}
+
+* {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    /* display: inline-block; */
+    border: none;
+    padding: 1em;
+    margin-top: 1em;
+    margin-left: 1em;
+    width: calc(2em + var(--width));
+    color: white;
+    background-color: black;
+    text-align: center;
+    text-decoration: none;
+}
+
+ul {
+    margin: 0;
+    padding-left: 1em;
+}
+
+main {
+    margin: 1em;
+}
+
+section {
+    border: 1px solid black;
+    padding: 1em;
+    width: var(--width);
+}
+
+section:not(:last-child) {
+    margin-bottom: 1em;
+}

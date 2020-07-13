@@ -1,3 +1,5 @@
+// Node.js Test
+
 import SpellChecker from '../src/SpellChecker.js';
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, resolve } from 'path';
