@@ -120,7 +120,7 @@ function runTestSuites(sc, filter = []) {
     }
 
     function percent(count, total) {
-        return `${(count / total * 100).toFixed(2)}`;
+        return `${(count / total * 100).toFixed(2)}%`;
     }
 
     function mark(result) {

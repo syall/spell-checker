@@ -9,7 +9,8 @@ async function SpellCheckerWithCurlData(
     url = 'http://127.0.0.1:5500/data/big.txt'
 ) {
     try {
-        output.textContent = 'Loading data into SpellChecker...';
+        output.innerHTML =
+            '<div class="loading">Loading data into SpellChecker...</div>';
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = async function () {
             if (this.readyState === 4 && this.status === 200) {
@@ -150,7 +151,7 @@ async function runTestSuites(sc, filter = []) {
     }
 
     function percent(count, total) {
-        return `${(count / total * 100).toFixed(2)}`;
+        return `${(count / total * 100).toFixed(2)}%`;
     }
 
     function mark(result) {
