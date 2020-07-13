@@ -2,11 +2,9 @@ import SpellChecker from './src/SpellChecker.js';
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 
-(function main() {
-    const sc = new SpellChecker();
-    addDirToSpellChecker(sc, join(resolve(), 'data'));
-    tests(sc);
-})();
+const sc = new SpellChecker();
+addDirToSpellChecker(sc, join(resolve(), 'data'));
+runTestSuites(sc);
 
 function addDirToSpellChecker(sc, dir, verbose = false) {
     try {
@@ -25,100 +23,129 @@ function addDirToSpellChecker(sc, dir, verbose = false) {
     }
 }
 
-function tests(sc) {
+function runTestSuites(sc) {
 
-    // Variables
-    let c, p, m, t;
-    const ps = [], ms = [], n = sc.constructor.name;
-
-    console.clear();
-    console.log(`${n} Test Suite Started`);
-    console.log();
-
-    // Unit Tests Start
-    c = 0;
-    t = 'Unit';
-    const UT = [
-        ['speling', 'spelling'],
-        ['korrectud', 'corrected'],
-        ['bycycle', 'bicycle'],
-        ['inconvient', 'inconvenient'],
-        ['arrainged', 'arranged'],
-        ['peotry', 'poetry'],
-        ['peotryy', 'poetry'],
-        ['word', 'word'],
-        ['quintessential', 'quintessential'],
-        ['teh', 'the']
+    const name = sc.constructor.name;
+    const threshold = 90;
+    const suites = [
+        {
+            title: 'Unit',
+            tests: [
+                // Known
+                ['word', 'word'],
+                // 1 Edit
+                ['teh', 'the'],
+                ['peotry', 'poetry'],
+                ['speling', 'spelling'],
+                ['bycycle', 'bicycle'],
+                ['arrainged', 'arranged'],
+                // 2 Edits
+                ['peotryy', 'poetry'],
+                ['korrectud', 'corrected'],
+                ['inconvient', 'inconvenient'],
+                // Unknown
+                ['neverseenyet', 'neverseenyet']
+            ],
+            count: 0,
+            cond: (input, test) => sc.correction(input) === test,
+            message: (c, i, t) => `${mark(c)} : '${i}' to '${t}'`
+        },
+        {
+            title: 'Performance',
+            tests: [
+                // Known
+                ['word', 1],
+                // 1 Edit
+                ['teh', 1],
+                ['peotry', 1],
+                ['speling', 1],
+                ['bycycle', 1],
+                ['arrainged', 1],
+                // 2 Edits
+                ['peotryy', 80],
+                ['korrectud', 160],
+                ['inconvient', 240],
+                // Unknown
+                ['neverseenyet', 320]
+            ],
+            count: 0,
+            cond: (input, test) => {
+                const start = new Date();
+                sc.correction(input);
+                const time = new Date() - start;
+                return time <= test;
+            },
+            message: (c, i, t) => `${mark(c)} : '${i}' corrected in <= ${t}ms`
+        }
     ];
-    console.log(`${t} Tests:`);
-    console.group();
-    for (const [bad, good] of UT) {
-        const pass = sc.correction(bad) === good && (c += 1);
-        console.log(`${mark(pass)} : '${bad}' to '${good}'`);
+
+    startSuites() && suites.forEach(suite => runSuite(suite)) || finishSuites();
+
+    function startSuites() {
+        console.clear();
+        console.log(`${name} Test Suites Initializing`);
+        console.group();
+        for (const s of suites)
+            if (verifySuite(s)) console.log(`${s.title} Test Suite Verified`);
+            else return console.log(`${s.title} Test Suite Invalid`) && false;
+        console.groupEnd();
+        console.log(`${name} Test Suites Started`);
+        console.log();
+        return true;
     }
-    console.groupEnd();
-    p = cent(c, UT.length);
-    m = message(t, p);
-    ms.push(m);
-    ps.push([c, UT.length]);
-    console.log(m);
-    console.log();
-    // Unit Tests End
 
-    // Performance Tests Start
-    c = 0;
-    t = 'Performance';
-    const PT = [
-        ['speling', 50],
-        ['korrectud', 100],
-        ['bycycle', 50],
-        ['inconvient', 100],
-        ['arrainged', 50],
-        ['peotry', 50],
-        ['peotryy', 100],
-        ['word', 25],
-        ['neverseen', 200],
-        ['teh', 50]
-    ];
-    console.log(`${t} Tests:`);
-    console.group();
-    for (const [word, low] of PT) {
-        const start = new Date();
-        sc.correction(word);
-        const time = new Date() - start;
-        const pass = time <= low && (c += 1);
-        console.log(`${mark(pass)} : '${word}' done in ${time}ms < ${low}ms`);
+    function runSuite(s) {
+        console.log(`${s.title} Test Suite Started: `);
+        console.group();
+        for (const [input, test] of s.tests) {
+            const cond = s.cond(input, test) && (s.count += 1);
+            console.log(s.message(cond, input, test));
+        }
+        console.groupEnd();
+        s.record = [s.count, s.tests.length];
+        s.percentage = percent(s.count, s.tests.length);
+        const result = pass(s.percentage);
+        s.result = `${s.title} Test Suite ${result}: ${s.percentage}`;
+        console.log(s.result);
+        console.log();
+        return true;
     }
-    console.groupEnd();
-    p = cent(c, PT.length);
-    m = message(t, p);
-    ms.push(m);
-    ps.push([c, PT.length]);
-    console.log(m);
-    console.log();
-    // Performance Tests End
 
-    console.log(`${sc.constructor.name} Test Suite Finished`);
-    console.group();
-    for (const r of ms)
-        console.log(r);
-    console.groupEnd();
-    let fp = 0, fc = 0;
-    for (const [ap, ac] of ps)
-        (fp += ap) && (fc += ac);
-    console.log(message(`${n}`, cent(fp, fc)));
-    console.log();
+    function finishSuites() {
+        console.log(`${name} Test Suites Finished`);
+        console.group();
+        for (const suite of suites)
+            console.log(suite.result);
+        console.groupEnd();
+        const { count, total } = suites.reduce((a, s) => ({
+            count: a.count + s.count,
+            total: a.total + s.tests.length
+        }), { count: 0, total: 0 });
+        const result = pass(percent(count, total));
+        console.log(`${name} Test Suite ${result}: ${percent(count, total)}`);
+        console.log();
+    }
 
-}
+    function verifySuite(s) {
+        return (
+            s.title &&
+            s.tests.length > 0 &&
+            s.count === 0 &&
+            s.cond &&
+            s.message
+        );
+    }
 
-function message(t, c) {
-    return `${t} Tests Result: ${c}%`;
-}
+    function percent(count, total) {
+        return `${(count / total * 100).toFixed(2)}`;
+    }
 
-function cent(c, t) {
-    return `${(c / t * 100).toFixed(2)}`;
-}
+    function mark(result) {
+        return result ? '✓' : '✗';
+    }
 
-function mark(result) {
-    return result ? '✓' : '✗';
+    function pass(percentage) {
+        return percentage >= threshold ? `Passed` : `Failed`;
+    }
+
 }
