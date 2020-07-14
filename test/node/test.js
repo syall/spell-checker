@@ -1,4 +1,4 @@
-import SpellCheckerWithDirData from '../utils/SpellCheckerWithDirData.js';
+import SpellCheckerWithDirData from '../../utils/SpellCheckerWithDirData.js';
 
 runTestSuites(SpellCheckerWithDirData());
 function runTestSuites(sc, filter = []) {

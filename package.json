@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "test": "node test/test-node.js",
+    "test": "node test/node/test.js",
     "metrics": "node metrics/stats.js"
   },
   "license": "MIT"

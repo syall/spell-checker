@@ -1,4 +1,4 @@
-import SpellChecker from '../src/SpellChecker.js';
+import SpellChecker from '../../src/SpellChecker.js';
 
 document.getElementById("button").onclick = initTests;
 const output = document.getElementById("output");
