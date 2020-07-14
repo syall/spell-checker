@@ -75,7 +75,7 @@ To avoid code repetition, [`SpellCheckerWithDirData`](`utils/SpellCheckerWithDir
 - `dir`: Directory to read files from, default value [`data/`](data/)
 - `verbose`: boolean that logs files, default value `false`
 
-## Testing
+## [Testing](test/)
 
 The testing framework is defined in the function `runTestSuites`. Each run is composed of Test Suites structured with at least these properties:
 
@@ -125,7 +125,7 @@ There are two factors that determine performance: word length and number of edit
 
 In general, words that are known or require one edit take 1ms or less. Words that require two edits or are unknown polynomially increase with word length and can run for a varied range of times; to prevent tests from failing due to unpredictable times, each test is compared to the average of ten correction runs.
 
-### [Node.js](test/node/test.js)
+### [Node.js](test/node/)
 
 The test script for Node.js can be run using `yarn test`, results outputting to the terminal.
 
@@ -149,7 +149,7 @@ The word counts are calculated by scanning these files in [`data/`](data/):
 
 Using these texts provides over 58,000 unique words and over 2.5 million scanned words.
 
-## Metrics
+## [Metrics](metrics/)
 
 As the decision making is determined by the data, ensuring the data is semantically correct and consistent is crucial. For the Spell Checker, the chosen metrics are the:
 
