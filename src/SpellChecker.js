@@ -41,7 +41,7 @@ export default class SpellChecker {
             const inserts = this.insertEdit(word);
             return [new Set([...swaps, ...deletes, ...replaces, ...inserts])];
         }
-        /** 2 Edits Case:  */
+        /** 2 Edits Case: */
         else if (n === 2) {
             const result = [];
             for (const wordSet of this.editN(word, 1))
