@@ -7,7 +7,7 @@ const arraySc = Array.from(sc.dictionary);
 const file = [];
 
 // Title
-writeLine(`Metrics Report: ${new Date().toISOString()}`);
+writeLine(`Metrics Report:`);
 
 // Top 10
 const top = 10;
@@ -38,5 +38,10 @@ function writeLine(line) {
     file.push(line);
 }
 function createMetricsReport() {
-    writeFileSync(join(resolve(), 'metrics', 'metrics-report.txt'), file.join('\n'));
+    writeFileSync(
+        join(resolve(),
+            'metrics',
+            `metrics-report_ ${new Date().toISOString()}.txt`),
+        file.join('\n')
+    );
 }
