@@ -31,10 +31,10 @@ export default class SpellChecker {
     editN(word, n) {
         /** 1 Edit Case: 54n+25 */
         if (n === 1) {
-            // Swap 2 letters: n-1
-            const swaps = this.swapEdit(word);
             // Delete 1 letter: n
             const deletes = this.deleteEdit(word);
+            // Swap 2 letters: n-1
+            const swaps = this.swapEdit(word);
             // Replace 1 letter: 26n
             const replaces = this.replaceEdit(word);
             // Insert 1 letter: 26(n+1)
