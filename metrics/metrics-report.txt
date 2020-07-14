@@ -1,0 +1,14 @@
+Metrics Report:
+- Top 10 Words:
+  - the: 133,631 at 5.23%
+  - and: 77,567 at 3.04%
+  - of: 70,224 at 2.75%
+  - to: 62,139 at 2.43%
+  - a: 46,345 at 1.81%
+  - in: 41,526 at 1.63%
+  - i: 37,855 at 1.48%
+  - that: 31,120 at 1.22%
+  - is: 24,938 at 0.98%
+  - you: 24,710 at 0.97%
+- Unique Word Count: 58,216
+- Total Words Scanned: 2,555,151
