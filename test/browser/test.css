@@ -38,6 +38,12 @@ main {
     width: calc(100% - 2 * var(--margin) + 2 * var(--border));
 }
 
+.error {
+    text-align: center;
+    width: calc(100% - 2 * var(--margin) + 2 * var(--border));
+    color: red;
+}
+
 section {
     border: var(--border) solid black;
     padding: var(--margin);

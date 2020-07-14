@@ -19,6 +19,7 @@ async function SpellCheckerWithCurlData(
         return sc;
     } catch (error) {
         console.error(error);
+        output.innerHTML = `<div class="error">Error: ${error.message}</div>`;
     }
 }
 
