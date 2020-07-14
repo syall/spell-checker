@@ -2,7 +2,7 @@
 
 ## Overview
 
-`spell-checker` is an implementation of a per word Spell Checker, corrections based on number of edits and probability based on words counted from large texts.
+`spell-checker` is an implementation of a per word Spell Checker, corrections based on edit disstance and word probability from large texts.
 
 ## Usage
 
@@ -46,22 +46,22 @@ The workflow for an input word is as follows:
     iii. Add `replaceEdit`
     iv.  Add `insertEdit`
 4. Return edits that are `known`
-5. Sort result from 2 by `probabilityComparison`
+5. Sort result from 2 with `probabilityComparison`
 6. Return the correction with the highest probability
 
 ### Corrections
 
-`correction` is the entry point of the Spell Checker. For an input word, the `candidates` are generated in the order from least to most complexity: if the word is known, if the words 1 edit away are known, if the words 2 edits away are known, and if the word is unknown. Candidates are arrays of sets, and `known` generates a new set with only known words from these arrays. From the final `known` set, the word with the highest probability is chosen as the correction.
+`correction` is the entry point of the Spell Checker. For an input word, the `candidates` are generated from least to most complex: if the word is known, if the words 1 edit away are known, if the words 2 edits away are known, and if the word is unknown. Candidates are arrays of sets, and `known` generates a new set with only known words from these arrays. From the final `known` set, the word with the highest probability is chosen as the correction.
 
 ### Simple Edits
 
-Edits of a word from `editN` are made by a single operation: either deleting a letter `n`, swapping two adjacent letters `n-1`, replacing a letter `26n`, or inserting a letter `26(n+1)`. By assuming the word is incorrect, the correct word should be a certain number of edits away, assuming less edits correlates with higher correctness. However, to have practical time and space complexity, only words at most 2 edits away are considered.
+Edits of a word from `editN` (`54n+25`) are made by a single operation: either deleting a letter (`n`), swapping two adjacent letters (`n-1`), replacing a letter (`26n`), or inserting a letter (`26(n+1)`). By assuming the word is incorrect, the correct word should be a certain number of edits away (edit distance), assuming less edits correlates with higher correctness. However, to have practical time and space complexity, only words with an edit distance of 2 are considered.
 
 ### Text Processing
 
 To add a text, `addCorpus` is called. `processText` first transforms the text to lowercase, then split into words using the regex `/w+/gi`. Once processed, each word is added to the dictionary, updating the word count and total count.
 
-To process the input word for a correction, `processWord` filters out input that do not contain exactly one word, then trimming whitespace and transforming to lowercase.
+To process the input word for a correction, `processWord` filters out input that do not contain exactly one word, then trimming whitespace from the word and transforming the word to lowercase.
 
 ### Probability
 
@@ -98,11 +98,11 @@ The testing framework is defined in the function `runTestSuites`. Each run is co
 
 Other features of the framework include:
 
-- Suite Filtering by title: `filter` argument
-- Suite Verification by definition: `verifySuite`
-- Starting, Running, Ending Hooks
-- Test Threshold: `90`% default
-- Total Test Suites' Results
+- Suite Filtering by title via `filter` parameter
+- Suite Verification by definition via `verifySuite`
+- Starting, Running, Ending Hooks for the process
+- Configurable Test Threshold with `90`% default
+- Record of Total Test Suites' Results
 
 ### Unit Test
 
@@ -113,17 +113,17 @@ Unit Tests are designed to test correction accuracy across different candidate c
 
 ### Performance Tests
 
-Performance Tests are designed to ensure an upper bound on the time taken to find a correction.
+Performance Tests are designed to ensure an upper bound of time is not passed when generating a correction.
 
-There are two factors that determine performance: word length and number of edits to generate a correct word:
+There are two factors that determine performance: word length and edit distance:
 
 - Word length determines the size of the candidate set: the longer the word, the more edits are generated
-- The number of edits to generate a correct word can be separated into tiers of performance:
+- The edit distance can be separated into tiers of performance:
   - If the word is known, only one `Map.get` is needed and is constant time : `O(1)`
   - If the word requires one edit, then the calculations are linear: `O(54n+25)`
   - If the word requires two edits or is unknown, run-time is polynomial: `O((54n+25)^2)`
 
-In general, words that are known or require one edit take 1ms or less. Words that require two edits or are unknown polynomially increase with word length and can run for a varied range of times; to prevent tests from failing due to unpredictable times, each test is compared to the average of ten correction runs.
+In general, words that are known or require one edit take 1ms or less. Words that require two edits or are unknown polynomially increase with word length. Because of this, each correction can run for across a varied range of times. To prevent tests from failing due to outliers, each test is compared to the average of ten correction runs.
 
 ### [Node.js](test/node/)
 
@@ -157,7 +157,7 @@ As the decision making is determined by the data, ensuring the data is semantica
 - Unique Word Count
 - Total Word Count
 
-By running `yarn metrics`, the script [`stats.js`](metrics/stats.js) will print to the terminal and write the file [`metrics-report.txt`](metrics/metrics-report.txt) with a time stamp.
+By running `yarn metrics`, the script [`stats.js`](metrics/stats.js) will print to the terminal and write the file `metrics-report_<time-stamp>.txt`.
 
 ## Notes
 
@@ -167,4 +167,6 @@ The project is inspired by [Norvig's guide to writing a Spelling Corrector](http
 
 ### Motivation
 
-To be honest, the reason I implemented this Spell Checker was because I found the article interesting. Also, I did not realize the methods used formed a simple AI! I had taken [Intro to AI at Rutgers](https://www.cs.rutgers.edu/academics/undergraduate/course-synopses/course-details/01-198-440-introduction-to-artificial-intelligence) and hated it due to the amount of math and probability involved. Not only that, the fields I do enjoy (Programming Language Design and Compilers) are essentially all deterministic, a.k.a. the opposite. Somehow, the article had "tricked" me into enjoying AI. Taking words and keeping word count from the data was training the model: a simple JavaScript Map. From there, the heuristics of edit distance and word probability were slipped in: finding the known words with as few edits as possible. So, with a single JavaScript class, all of these seemingly complex topics I hated were now implemented by my own hands.
+To be honest, the reason I implemented this Spell Checker was because I found the article interesting.
+
+Anyways, I did not realize the methods used formed a simple AI! I had taken [Intro to AI at Rutgers](https://www.cs.rutgers.edu/academics/undergraduate/course-synopses/course-details/01-198-440-introduction-to-artificial-intelligence) and hated it due to the amount of math and probability involved. Not only that, the fields I do enjoy (Programming Language Design and Compilers) are essentially all deterministic, a.k.a. the opposite. Somehow, the article had "tricked" me into enjoying AI. Taking words and keeping word count from the data was training the model stored in a simple JavaScript Map. From there, the heuristics of edit distance and word probability were slipped in: finding known words with as few edits as possible. So, with a single JavaScript class, all of these seemingly complex topics I hated were now implemented by my own hands.
