@@ -7,7 +7,7 @@ const arraySc = Array.from(sc.dictionary);
 const file = [];
 
 // Title
-writeLine(`Metrics Report:`);
+writeLine(`Metrics Report: ${new Date().toISOString()}`);
 
 // Top 10
 const top = 10;
