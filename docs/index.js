@@ -1,4 +1,4 @@
-import SpellChecker from '../src/SpellChecker.js';
+import SpellChecker from './SpellChecker.js';
 
 (async () => {
     console.log('Loading in SpellChecker');
