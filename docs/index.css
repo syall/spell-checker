@@ -1,0 +1,35 @@
+* {
+    font-family: 'Roboto', sans-serif;
+    font-size: var(--font);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    font-family: 'Roboto Mono', monospace;
+    padding: 1em;
+    resize: none;
+}
+
+button {
+    height: 10vh;
+    padding: 0;
+}
+
+#button {
+    width: 90vw;
+}
+
+#clear {
+    width: 10vw;
+}
+
+#input, #output {
+    height: 45vh;
+}
+
+.buttons {
+    display: flex;
+}
