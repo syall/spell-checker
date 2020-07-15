@@ -27,6 +27,10 @@ console.log(
 );
 ```
 
+## [Demo](https://spell-checker.syall.work)
+
+The demo is a simple HTML/CSS/JS static page located in [`docs/`](docs/)and hosted by GitHub Pages: [`https://spell-checker.syall.work`](https://spell-checker.syall.work).
+
 ## [SpellChecker.js](src/SpellChecker.js)
 
 ### Workflow
