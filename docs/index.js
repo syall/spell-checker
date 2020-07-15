@@ -51,7 +51,7 @@ import SpellChecker from './SpellChecker.js';
 
     input.value = [
         'hlep me out!',
-        'I konw dnot hoq to spel ym anme.',
+        'I dw konw dnot hoq to spel ym anme.',
         'smauel?',
         'I sstand korrectud.'
     ].join(' ');
