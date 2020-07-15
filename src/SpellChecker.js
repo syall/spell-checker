@@ -6,7 +6,7 @@ export default class SpellChecker {
     count = 0;
 
     correction(word) {
-        const result = Array.from(this.candidates(word));
+        const result = Array.from(this.candidates(this.processWord(word)));
         result.sort(this.probabilityComparison);
         return result[0];
     }
@@ -85,8 +85,9 @@ export default class SpellChecker {
 
     addCorpus(text) {
         for (const word of this.processText(text)) {
-            const exists = this.dictionary.get(word);
-            this.dictionary.set(word, exists ? exists + 1 : 1);
+            const processed = this.processWord(word);
+            const exists = this.dictionary.get(processed);
+            this.dictionary.set(processed, exists ? exists + 1 : 1);
             this.count += 1;
         }
         return this;
