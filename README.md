@@ -31,6 +31,12 @@ console.log(
 
 The demo is a simple HTML/CSS/JS static page located in [`docs/`](docs/)and hosted by GitHub Pages: [`https://spell-checker.syall.work`](https://spell-checker.syall.work).
 
+It should be mentioned that the words inputted may not be corrected to the words a user might expect, largely due to the word probability's weight in deciding on a correction.
+
+For example, when testing a sentence, a user might purposefully mispell `to` as `ot`. However, instead of `to` being returned, `ot` is corrected to `of`. For the Spell Checker, `of` is certainly the best guess given no context; to the user forming the sentence, `of` could be nonsense.
+
+For simplicity's sake, the output is completely lowercase as preserving letter case by position is quite difficult because of delete and insert edits.
+
 ## [SpellChecker.js](src/SpellChecker.js)
 
 ### Workflow
